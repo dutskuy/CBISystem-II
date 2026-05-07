@@ -80,10 +80,14 @@
                     <td class="px-6 py-4 font-semibold">
                         Rp {{ number_format($order->total, 0, ',', '.') }}
                     </td>
-                    <td class="px-6 py-4">
+                   <td class="px-6 py-4">
                         @if($order->payment)
-                            <span class="badge-{{ $order->payment->status === 'verified' ? 'delivered' : ($order->payment->status === 'rejected' ? 'cancelled' : ($order->payment->status === 'uploaded' ? 'confirmed' : 'pending')) }}">
-                                {{ ucfirst($order->payment->status) }}
+                            <span class="badge-{{ 
+                                $order->payment->status === 'verified' ? 'delivered' : 
+                                ($order->payment->status === 'manual_verified' ? 'manual_verified' : 
+                                ($order->payment->status === 'rejected' ? 'cancelled' : 
+                                ($order->payment->status === 'uploaded' ? 'confirmed' : 'pending'))) }}">
+                                {{ $order->payment->status === 'manual_verified' ? 'Manual Verified' : ucfirst($order->payment->status) }}
                             </span>
                         @else
                             <span class="text-gray-400 text-xs">Belum bayar</span>

@@ -63,6 +63,7 @@ Route::prefix('admin')
             Route::get('/',                          [Admin\OrderController::class, 'payments'])->name('index');
             Route::patch('/{payment}/verify',        [Admin\OrderController::class, 'verifyPayment'])->name('verify');
             Route::patch('/{payment}/reject',        [Admin\OrderController::class, 'rejectPayment'])->name('reject');
+            Route::patch('/{payment}/manual-verify', [Admin\OrderController::class, 'manualVerifyPayment'])->name('manual-verify');
         });
 
         // Invoice

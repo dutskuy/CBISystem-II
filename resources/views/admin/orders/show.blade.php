@@ -125,7 +125,42 @@
                             Klik di luar gambar atau tekan <kbd class="bg-white bg-opacity-20 px-1.5 py-0.5 rounded text-xs">ESC</kbd> untuk menutup
                         </div>
                     </div>
-                    @if($order->payment->status === 'uploaded')
+                    @if($order->payment->status === 'pending')
+    {{-- Belum ada bukti TF dari customer --}}
+    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
+        <div class="flex items-center gap-2 mb-1">
+            <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            <p class="text-yellow-700 font-semibold text-sm">Customer belum upload bukti transfer</p>
+        </div>
+        <p class="text-xs text-yellow-600 ml-6">Jika dana sudah masuk ke rekening, admin dapat mengkonfirmasi pembayaran secara manual.</p>
+    </div>
+
+    <div class="flex gap-3">
+        {{-- Konfirmasi Manual --}}
+        <form method="POST" action="{{ route('admin.payments.manual-verify', $order->payment) }}"
+              onsubmit="return confirm('Konfirmasi pembayaran secara manual? Pastikan dana sudah masuk ke rekening.')">
+            @csrf @method('PATCH')
+            <button type="submit" class="btn-primary flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Konfirmasi Manual
+            </button>
+        </form>
+
+        {{-- Tolak --}}
+        <button type="button"
+                onclick="document.getElementById('modal-tolak').classList.remove('hidden')"
+                class="btn-danger flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Tolak
+        </button>
+    </div>
+                    @elseif($order->payment->status === 'uploaded')
                         <div class="flex gap-3">
                             <form method="POST" action="{{ route('admin.payments.verify', $order->payment) }}">
                                 @csrf @method('PATCH')
@@ -150,6 +185,19 @@
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                             </svg>
                             Diverifikasi oleh {{ $order->payment->verifiedBy->name }} pada {{ $order->payment->verified_at->format('d M Y H:i') }}
+                        </div>
+                        @elseif($order->payment->status === 'manual_verified')
+                        <div class="flex items-center gap-2 text-purple-600 bg-purple-50 rounded-lg p-3">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-medium">Pembayaran dikonfirmasi manual oleh admin</p>
+                                <p class="text-xs text-purple-400 mt-0.5">
+                                    Oleh {{ $order->payment->verifiedBy->name }}
+                                    pada {{ $order->payment->verified_at->format('d M Y H:i') }}
+                                </p>
+                            </div>
                         </div>
                     @elseif($order->payment->status === 'rejected')
                         <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">

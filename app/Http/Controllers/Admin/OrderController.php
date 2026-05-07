@@ -176,6 +176,44 @@ class OrderController extends Controller
         return back()->with('success', 'Pembayaran berhasil diverifikasi. Pesanan dikonfirmasi.');
     }
 
+    public function manualVerifyPayment(Payment $payment)
+{
+    abort_if($payment->status === 'verified' || $payment->status === 'manual_verified', 422);
+
+    DB::transaction(function () use ($payment) {
+        $payment->update([
+            'status'      => 'manual_verified',
+            'verified_by' => auth()->id(),
+            'verified_at' => now(),
+            'sender_name' => 'Dikonfirmasi manual oleh admin',
+        ]);
+
+        $order = $payment->order;
+        $order->update(['status' => 'confirmed']);
+
+        // Kurangi stok
+        foreach ($order->items as $item) {
+            $stock = $item->product->stock;
+            if ($stock) {
+                $stockBefore = $stock->quantity;
+                $stock->decrement('quantity', $item->quantity);
+                StockMovement::create([
+                    'product_id'   => $item->product_id,
+                    'type'         => 'out',
+                    'quantity'     => $item->quantity,
+                    'stock_before' => $stockBefore,
+                    'stock_after'  => $stock->quantity - $item->quantity,
+                    'reference'    => $order->order_number,
+                    'notes'        => 'Penjualan - konfirmasi manual admin',
+                    'created_by'   => auth()->id(),
+                ]);
+            }
+        }
+    });
+
+    return back()->with('success', 'Pembayaran dikonfirmasi manual. Pesanan berubah menjadi Confirmed.');
+}
+
     public function rejectPayment(Request $request, Payment $payment)
     {
         $request->validate([
