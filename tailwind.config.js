@@ -5,7 +5,12 @@ export default {
         './resources/**/*.js',
     ],
     safelist: [
-        '.badge-confirmed',  // ← paksa Tailwind include class ini
+        'badge-pending',
+        'badge-confirmed',
+        'badge-processing',
+        'badge-shipped',
+        'badge-delivered',
+        'badge-cancelled',
         'badge-manual_verified',
     ],
     theme: {
