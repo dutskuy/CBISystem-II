@@ -4,6 +4,10 @@ export default {
         './resources/**/*.blade.php',
         './resources/**/*.js',
     ],
+    safelist: [
+        '.badge-confirmed',  // ← paksa Tailwind include class ini
+        'badge-manual_verified',
+    ],
     theme: {
         extend: {
             colors: {
