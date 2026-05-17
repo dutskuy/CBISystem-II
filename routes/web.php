@@ -8,14 +8,7 @@ use App\Http\Controllers\Owner;
 // ─────────────────────────────────────────
 // REDIRECT ROOT
 // ─────────────────────────────────────────
-Route::get('/', function () {
-    if (auth()->check()) {
-        return auth()->user()->role === 'admin'
-            ? redirect()->route('admin.dashboard')
-            : redirect()->route('customer.dashboard');
-    }
-    return redirect()->route('login');
-});
+Route::get('/', [App\Http\Controllers\LandingController::class, 'index'])->name('landing');
 // ─────────────────────────────────────────
 // OWNER ROOT
 // ─────────────────────────────────────────
