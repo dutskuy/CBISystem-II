@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             BrandSeeder::class,
             CategorySeeder::class,
+            OwnerSeeder::class,
         ]);
     }
 }
