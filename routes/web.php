@@ -3,20 +3,48 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Customer;
+use App\Http\Controllers\Owner;
 
 // ─────────────────────────────────────────
 // REDIRECT ROOT
 // ─────────────────────────────────────────
-// Route::get('/', function () {
-//     if (auth()->check()) {
-//         return auth()->user()->role === 'admin'
-//             ? redirect()->route('admin.dashboard')
-//             : redirect()->route('customer.dashboard');
-//     }
-//     return redirect()->route('login');
-// });
-
 Route::get('/', [App\Http\Controllers\LandingController::class, 'index'])->name('landing');
+// ─────────────────────────────────────────
+// OWNER ROOT
+// ─────────────────────────────────────────
+
+
+Route::prefix('owner')
+    ->name('owner.')
+    ->middleware(['auth', 'owner'])
+    ->group(function () {
+
+        // Dashboard
+        Route::get('/dashboard', [Owner\DashboardController::class, 'index'])->name('dashboard');
+
+        // Laporan (read only)
+        Route::get('/reports/sales',  [Owner\ReportController::class, 'sales'])->name('reports.sales');
+        Route::get('/reports/sales/export', [Owner\ReportController::class, 'exportSales'])->name('reports.sales.export');
+        Route::get('/reports/stock',  [Owner\ReportController::class, 'stock'])->name('reports.stock');
+        Route::get('/reports/profit', [Owner\ReportController::class, 'profit'])->name('reports.profit');
+
+        // Pesanan (read only)
+        Route::get('/orders',       [Owner\OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [Owner\OrderController::class, 'show'])->name('orders.show');
+
+        // Invoice (read only)
+        Route::get('/invoices',              [Owner\InvoiceController::class, 'index'])->name('invoices.index');
+        Route::get('/invoices/{invoice}',    [Owner\InvoiceController::class, 'show'])->name('invoices.show');
+        Route::get('/invoices/{invoice}/download', [Owner\InvoiceController::class, 'download'])->name('invoices.download');
+
+        // Customer (read only)
+        Route::get('/customers',         [Owner\CustomerController::class, 'index'])->name('customers.index');
+        Route::get('/customers/{user}',  [Owner\CustomerController::class, 'show'])->name('customers.show');
+
+        // Produk & Stok (read only)
+        Route::get('/products', [Owner\ProductController::class, 'index'])->name('products.index');
+        Route::get('/stocks',   [Owner\StockController::class, 'index'])->name('stocks.index');
+    });
 
 // ─────────────────────────────────────────
 // ADMIN ROUTES

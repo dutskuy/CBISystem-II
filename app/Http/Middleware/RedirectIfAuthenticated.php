@@ -16,17 +16,15 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                $user = Auth::guard($guard)->user();
-
-                // Redirect berdasarkan role
-                if ($user->role === 'admin') {
-                    return redirect()->route('admin.dashboard');
-                }
-
-                return redirect()->route('customer.dashboard');
+                $role = Auth::guard($guard)->user()->role;
+                return match($role) {
+                    'admin'    => redirect()->route('admin.dashboard'),
+                    'owner'    => redirect()->route('owner.dashboard'),
+                    default    => redirect()->route('customer.dashboard'),
+                };
             }
-        }
 
         return $next($request);
     }
+}
 }
