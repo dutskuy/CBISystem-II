@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
             OwnerSeeder::class,
             BrandSeeder::class,
             CategorySeeder::class,
+            ProductSeeder::class,
+            CustomerSeeder::class, // ← tambahkan
         ]);
     }
 }

@@ -61,7 +61,27 @@
                         @php
                             $badgeMap = ['pending'=>'pending','uploaded'=>'confirmed','verified'=>'delivered','rejected'=>'cancelled'];
                         @endphp
-                        <span class="badge-{{ $badgeMap[$payment->status] }}">{{ ucfirst($payment->status) }}</span>
+                        <td class="px-6 py-4">
+                            @php
+                                $badgeMap = [
+                                    'pending'         => 'pending',
+                                    'uploaded'        => 'confirmed',
+                                    'verified'        => 'delivered',
+                                    'manual_verified' => 'manual_verified', // ← tambahkan
+                                    'rejected'        => 'cancelled',
+                                ];
+                                $labelMap = [
+                                    'pending'         => 'Pending',
+                                    'uploaded'        => 'Uploaded',
+                                    'verified'        => 'Verified',
+                                    'manual_verified' => 'Manual Verified', // ← tambahkan
+                                    'rejected'        => 'Rejected',
+                                ];
+                            @endphp
+                            <span class="badge-{{ $badgeMap[$payment->status] ?? 'pending' }}">
+                                {{ $labelMap[$payment->status] ?? ucfirst($payment->status) }}
+                            </span>
+                        </td>
                     </td>
                     <td class="px-6 py-4">
                         <a href="{{ route('admin.orders.show', $payment->order) }}"
