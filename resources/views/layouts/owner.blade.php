@@ -14,13 +14,13 @@
        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
 
     {{-- Logo --}}
-    <div class="flex items-center gap-3 px-6 py-5 border-b border-blue-800">
-        <div class="w-9 h-9 bg-white rounded-lg flex items-center justify-center">
-            <img src="/logocbi.jpg" alt="">
+    <div class="flex items-center gap-3 px-5 py-5 border-b border-blue-700">
+        <div class="w-9 h-9 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+            <span class="text-blue-900 font-black text-sm">CBI</span>
         </div>
-        <div>
-            <p class="font-bold text-sm leading-tight">Bearindo System</p>
-            <p class="text-blue-300 text-xs">Admin Panel</p>
+        <div class="min-w-0">
+            <p class="text-white font-bold text-sm leading-tight truncate">Bearindo System</p>
+            <p class="text-blue-300 text-xs">Owner Panel</p>
         </div>
     </div>
 
@@ -41,20 +41,19 @@
             </a>
 
         <div class="px-4 pt-4 pb-1">
-                <p class="text-emerald-400 text-xs font-semibold uppercase tracking-widest">Laporan</p>
+                <p class="text-blue-300 text-xs font-semibold uppercase tracking-widest">Laporan</p>
             </div>
 
             <a href="{{ route('owner.reports.profit') }}"
-               class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors
-                      {{ request()->routeIs('owner.reports.profit')
-                         ? 'bg-white bg-opacity-20 text-white font-semibold'
-                         : 'text-emerald-100 hover:bg-white hover:bg-opacity-10' }}">
+            class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors
+                    {{ request()->routeIs('owner.reports.profit')
+                        ? 'bg-white bg-opacity-20 text-white font-semibold'
+                        : 'text-emerald-100 hover:bg-white hover:bg-opacity-10' }}">
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-
-                <span>Laporan Keuntungan</span>
+                <span class="truncate">Laporan Keuntungan</span>
             </a>
             <a href="{{ route('owner.reports.sales') }}"
                class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors
@@ -82,7 +81,7 @@
             </a>
             {{-- TRANSAKSI --}}
             <div class="px-4 pt-4 pb-1">
-                <p class="text-emerald-400 text-xs font-semibold uppercase tracking-widest">Transaksi</p>
+                <p class="text-blue-300 text-xs font-semibold uppercase tracking-widest">Transaksi</p>
             </div>
 
             <a href="{{ route('owner.orders.index') }}"
@@ -111,7 +110,7 @@
 
             {{-- DATA --}}
             <div class="px-4 pt-4 pb-1">
-                <p class="text-emerald-400 text-xs font-semibold uppercase tracking-widest">Data</p>
+                <p class="text-blue-300 text-xs font-semibold uppercase tracking-widest">Data</p>
             </div>
 
             <a href="{{ route('owner.customers.index') }}"
@@ -154,22 +153,34 @@
     </nav>
 
     {{-- User Info --}}
-    <div class="px-4 py-4 border-t border-blue-800">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <span class="text-white text-sm font-bold">{{ substr(auth()->user()->name, 0, 1) }}</span>
+    <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-blue-700 bg-blue-900">
+        <div class="flex items-center gap-2 mb-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <span class="text-white font-bold text-xs">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-white truncate">{{ auth()->user()->name }}</p>
-                <p class="text-xs text-blue-300 truncate">Administrator</p>
+                <p class="text-white text-xs font-medium truncate">{{ auth()->user()->name }}</p>
+                <p class="text-blue-300 text-xs">Owner</p>
             </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('owner.profile') }}"
+            class="flex-1 flex items-center gap-2 text-xs text-blue-300 hover:text-white hover:bg-blue-800 px-2 py-1.5 rounded-lg transition-colors">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <span>Ganti Password</span>
+            </a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="text-blue-300 hover:text-white transition-colors" title="Logout">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button type="submit"
+                        class="flex items-center gap-2 text-xs text-blue-300 hover:text-white hover:bg-blue-800 px-2 py-1.5 rounded-lg transition-colors">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
+                    <span>Keluar</span>
                 </button>
             </form>
         </div>

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Customer;
 use App\Http\Controllers\Owner;
+use App\Http\Controllers\Owner\ProfileController as OwnerProfile;
 
 // ─────────────────────────────────────────
 // REDIRECT ROOT
@@ -44,6 +45,10 @@ Route::prefix('owner')
         // Produk & Stok (read only)
         Route::get('/products', [Owner\ProductController::class, 'index'])->name('products.index');
         Route::get('/stocks',   [Owner\StockController::class, 'index'])->name('stocks.index');
+
+        //Ganti Password
+        Route::get('/profile',          [OwnerProfile::class, 'index'])->name('profile');
+        Route::patch('/profile/password', [OwnerProfile::class, 'updatePassword'])->name('profile.password');
     });
 
 // ─────────────────────────────────────────
