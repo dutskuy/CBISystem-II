@@ -112,6 +112,21 @@ Route::prefix('admin')
             Route::get('/sales/export',              [Admin\ReportController::class, 'exportSales'])->name('sales.export');
             Route::get('/stock',                     [Admin\ReportController::class, 'stock'])->name('stock');
         });
+
+        Route::middleware('super_admin')->group(function () {
+            Route::get('/admins',                    [Admin\AdminManagerController::class, 'index'])->name('admins.index');
+            Route::get('/admins/create',             [Admin\AdminManagerController::class, 'create'])->name('admins.create');
+            Route::post('/admins',                   [Admin\AdminManagerController::class, 'store'])->name('admins.store');
+            Route::get('/admins/{user}/edit',        [Admin\AdminManagerController::class, 'edit'])->name('admins.edit');
+            Route::patch('/admins/{user}',           [Admin\AdminManagerController::class, 'update'])->name('admins.update');
+            Route::patch('/admins/{user}/toggle',    [Admin\AdminManagerController::class, 'toggleActive'])->name('admins.toggle');
+            Route::patch('/admins/{user}/reset-password', [Admin\AdminManagerController::class, 'resetPassword'])->name('admins.reset-password');
+            Route::delete('/admins/{user}',          [Admin\AdminManagerController::class, 'destroy'])->name('admins.destroy');
+
+            // Log Aktivitas
+            Route::get('/activity-logs', [Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
+
+        });
     });
 
 // ─────────────────────────────────────────

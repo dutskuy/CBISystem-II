@@ -10,14 +10,14 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-    $middleware->trustProxies(at: '*');
+    ->withMiddleware(function (Middleware $middleware) {
     $middleware->alias([
-        'admin'    => \App\Http\Middleware\AdminMiddleware::class,
-        'customer' => \App\Http\Middleware\CustomerMiddleware::class,
-        'owner'    => \App\Http\Middleware\OwnerMiddleware::class,
-        ]);
-    })
+        'admin'       => \App\Http\Middleware\AdminMiddleware::class,
+        'super_admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
+        'customer'    => \App\Http\Middleware\CustomerMiddleware::class,
+        'owner'       => \App\Http\Middleware\OwnerMiddleware::class,
+    ]);
+})
     ->withExceptions(function (Exceptions $exceptions): void {
             $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
             if ($e->getStatusCode() === 403) {
