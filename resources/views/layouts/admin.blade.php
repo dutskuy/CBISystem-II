@@ -25,7 +25,7 @@
     </div>
 
     {{-- Navigation --}}
-    <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+    <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto pb-24">
 
         {{-- Dashboard --}}
         <a href="{{ route('admin.dashboard') }}"
