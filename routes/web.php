@@ -159,7 +159,6 @@ Route::prefix('owner')
         Route::patch('/profile/password', [OwnerProfile::class, 'updatePassword'])->name('profile.password');
     });
 
-
 // ─────────────────────────────────────────
 // CUSTOMER ROUTES
 // ─────────────────────────────────────────

@@ -23,7 +23,11 @@ class AdminSeeder extends Seeder
         $superAdmin->update(['role' => 'super_admin']);
         $superAdmin->syncRoles(['super_admin']);
 
+<<<<<<< HEAD
         // Admin Biasa
+=======
+        // Contoh Admin Biasa
+>>>>>>> 43089a946ef58a777a6ddd9901b6091f0c032aa0
         $admin = User::firstOrCreate(
             ['email' => 'staff@bearindo.com'],
             [
@@ -37,6 +41,7 @@ class AdminSeeder extends Seeder
 
         $this->command->info('✓ Super Admin: admin@bearindo.com');
         $this->command->info('✓ Admin Staff: staff@bearindo.com');
+<<<<<<< HEAD
 
         // Admin Gudang
         $adminGudang = User::firstOrCreate(
@@ -52,5 +57,7 @@ class AdminSeeder extends Seeder
         $adminGudang->syncRoles(['admin_gudang']);
 
         $this->command->info('✓ Admin Gudang : gudang@bearindo.com / gudang123');
+=======
+>>>>>>> 43089a946ef58a777a6ddd9901b6091f0c032aa0
     }
 }
