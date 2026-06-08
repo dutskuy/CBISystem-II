@@ -18,9 +18,11 @@ class RedirectIfAuthenticated
             if (Auth::guard($guard)->check()) {
                 $role = Auth::guard($guard)->user()->role;
                 return match($role) {
-                    'admin'    => redirect()->route('admin.dashboard'),
-                    'owner'    => redirect()->route('owner.dashboard'),
-                    default    => redirect()->route('customer.dashboard'),
+                    'super_admin'  => redirect()->route('admin.dashboard'),
+                    'admin'        => redirect()->route('admin.dashboard'),
+                    'admin_gudang' => redirect()->route('gudang.dashboard'),
+                    'owner'        => redirect()->route('owner.dashboard'),
+                    default        => redirect()->route('customer.dashboard'),
                 };
             }
 

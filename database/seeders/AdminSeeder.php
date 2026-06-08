@@ -10,16 +10,47 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::create([
-            'name'         => 'Administrator',
-            'email'        => 'admin@bearindo.com',
-            'password'     => Hash::make('admin123'),
-            'role'         => 'admin',
-            'phone'        => '021-1234567',
-            'company_name' => 'PT Central Bearindo International',
-            'is_active'    => true,
-        ]);
+        // Super Admin
+        $superAdmin = User::firstOrCreate(
+            ['email' => 'admin@bearindo.com'],
+            [
+                'name'      => 'Administrator',
+                'password'  => Hash::make('admin123'),
+                'role'      => 'super_admin',
+                'is_active' => true,
+            ]
+        );
+        $superAdmin->update(['role' => 'super_admin']);
+        $superAdmin->syncRoles(['super_admin']);
 
-        $admin->assignRole('admin');
+        // Admin Biasa
+        $admin = User::firstOrCreate(
+            ['email' => 'staff@bearindo.com'],
+            [
+                'name'      => 'Staff Admin',
+                'password'  => Hash::make('staff123'),
+                'role'      => 'admin',
+                'is_active' => true,
+            ]
+        );
+        $admin->syncRoles(['admin']);
+
+        $this->command->info('✓ Super Admin: admin@bearindo.com');
+        $this->command->info('✓ Admin Staff: staff@bearindo.com');
+
+        // Admin Gudang
+        $adminGudang = User::firstOrCreate(
+            ['email' => 'gudang@bearindo.com'],
+            [
+                'name'      => 'Staff Gudang',
+                'password'  => Hash::make('gudang123'),
+                'role'      => 'admin_gudang',
+                'is_active' => true,
+            ]
+        );
+        $adminGudang->update(['role' => 'admin_gudang']);
+        $adminGudang->syncRoles(['admin_gudang']);
+
+        $this->command->info('✓ Admin Gudang : gudang@bearindo.com / gudang123');
     }
 }

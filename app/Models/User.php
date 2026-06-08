@@ -40,5 +40,36 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class);
     }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
+    }
+
+    public function isAdminOrAbove(): bool
+    {
+        return in_array($this->role, ['super_admin', 'admin']);
+    }
+
+    public function canSeeProfit(): bool
+    {
+        return in_array($this->role, ['super_admin', 'owner']);
+    }
+
+    public function canManageAdmins(): bool
+    {
+        return $this->role === 'super_admin';
+    }
+
+    public function isAdminGudang(): bool
+    {
+        return $this->role === 'admin_gudang';
+    }
+
+    public function canManageStock(): bool
+    {
+        return in_array($this->role, ['super_admin', 'admin', 'admin_gudang']);
+    }
+
     
 }

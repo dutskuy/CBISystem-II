@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class AdminMiddleware
+class AdminGudangMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
@@ -13,7 +13,8 @@ class AdminMiddleware
             return redirect()->route('login');
         }
 
-        if (!in_array(auth()->user()->role, ['super_admin', 'admin'])) {
+        // super_admin, admin, dan admin_gudang boleh akses
+        if (!in_array(auth()->user()->role, ['super_admin', 'admin', 'admin_gudang'])) {
             abort(403);
         }
 

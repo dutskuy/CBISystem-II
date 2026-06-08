@@ -4,31 +4,139 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Customer;
 use App\Http\Controllers\Owner;
+use App\Http\Controllers\AdminGudang;
 use App\Http\Controllers\Owner\ProfileController as OwnerProfile;
 
 // ─────────────────────────────────────────
 // REDIRECT ROOT
 // ─────────────────────────────────────────
 Route::get('/', [App\Http\Controllers\LandingController::class, 'index'])->name('landing');
+
+
+// ─────────────────────────────────────────
+// ADMIN ROUTES
+// ─────────────────────────────────────────
+
+Route::prefix('admin')
+->name('admin.')
+->middleware(['auth', 'admin'])
+->group(function () {
+    
+    // Dashboard
+    Route::get('/dashboard', [Admin\DashboardController::class, 'index'])
+    ->name('dashboard');
+    
+    // Brand
+    Route::resource('brands', Admin\BrandController::class);
+    
+    // Users
+    Route::get('/users', [Admin\UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}', [Admin\UserController::class, 'show'])->name('users.show');
+    Route::patch('/users/{user}/toggle-active', [Admin\UserController::class, 'toggleActive'])->name('users.toggleActive');
+    
+    // Users >> Pelanggan
+    Route::patch('/users/{user}/reset-password', [Admin\UserController::class, 'resetPassword'])->name('users.resetPassword');
+    
+    // Category
+    Route::resource('categories', Admin\CategoryController::class);
+    
+    // Product
+    Route::resource('products', Admin\ProductController::class);
+    
+    // Stock
+    Route::prefix('stocks')->name('stocks.')->group(function () {
+        Route::get('/',                          [Admin\StockController::class, 'index'])->name('index');
+        Route::get('/{product}/adjust',          [Admin\StockController::class, 'adjust'])->name('adjust');
+        Route::post('/{product}/adjust',         [Admin\StockController::class, 'store'])->name('store');
+        Route::get('/movements',                 [Admin\StockController::class, 'movements'])->name('movements');
+        Route::get('/low-stock',                 [Admin\StockController::class, 'lowStock'])->name('low-stock');
+        });
+        
+        // Order
+        Route::resource('orders', Admin\OrderController::class)->only(['index', 'show']);
+        Route::patch('/orders/{order}/status',       [Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
+        
+        // Payment Verification
+        Route::prefix('payments')->name('payments.')->group(function () {
+            Route::get('/',                          [Admin\OrderController::class, 'payments'])->name('index');
+            Route::patch('/{payment}/verify',        [Admin\OrderController::class, 'verifyPayment'])->name('verify');
+            Route::patch('/{payment}/reject',        [Admin\OrderController::class, 'rejectPayment'])->name('reject');
+            Route::patch('/{payment}/manual-verify', [Admin\OrderController::class, 'manualVerifyPayment'])->name('manual-verify');
+            });
+            
+            // Invoice
+            Route::get('/invoices',                      [Admin\InvoiceController::class, 'index'])->name('invoices.index');
+            Route::get('/invoices/{invoice}',            [Admin\InvoiceController::class, 'show'])->name('invoices.show');
+            Route::get('/invoices/{invoice}/download',   [Admin\InvoiceController::class, 'download'])->name('invoices.download');
+            
+            // Report
+            Route::prefix('reports')->name('reports.')->group(function () {
+                Route::get('/sales',                     [Admin\ReportController::class, 'sales'])->name('sales');
+                Route::get('/sales/export',              [Admin\ReportController::class, 'exportSales'])->name('sales.export');
+                Route::get('/stock',                     [Admin\ReportController::class, 'stock'])->name('stock');
+                });
+                
+                Route::middleware('super_admin')->group(function () {
+                    Route::get('/admins',                    [Admin\AdminManagerController::class, 'index'])->name('admins.index');
+                    Route::get('/admins/create',             [Admin\AdminManagerController::class, 'create'])->name('admins.create');
+                    Route::post('/admins',                   [Admin\AdminManagerController::class, 'store'])->name('admins.store');
+                    Route::get('/admins/{user}/edit',        [Admin\AdminManagerController::class, 'edit'])->name('admins.edit');
+                    Route::patch('/admins/{user}',           [Admin\AdminManagerController::class, 'update'])->name('admins.update');
+                    Route::patch('/admins/{user}/toggle',    [Admin\AdminManagerController::class, 'toggleActive'])->name('admins.toggle');
+                    Route::patch('/admins/{user}/reset-password', [Admin\AdminManagerController::class, 'resetPassword'])->name('admins.reset-password');
+                    Route::delete('/admins/{user}',          [Admin\AdminManagerController::class, 'destroy'])->name('admins.destroy');
+                    
+                    // Log Aktivitas
+                    Route::get('/activity-logs', [Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
+                    
+        });
+        });
+        
+// ─────────────────────────────────────────
+// ADMIN GUDANG ROOT
+// ─────────────────────────────────────────
+
+        Route::prefix('gudang')
+        ->name('gudang.')
+        ->middleware(['auth', 'admin_gudang'])
+        ->group(function () {
+            
+            // Dashboard
+            Route::get('/dashboard', [AdminGudang\DashboardController::class, 'index'])->name('dashboard');
+            
+            // Produk (read only + lihat stok)
+            Route::get('/products',         [AdminGudang\ProductController::class, 'index'])->name('products.index');
+            Route::get('/products/{product}', [AdminGudang\ProductController::class, 'show'])->name('products.show');
+            
+            // Stok (full access)
+            Route::get('/stocks',                    [AdminGudang\StockController::class, 'index'])->name('stocks.index');
+            Route::get('/stocks/{product}/adjust',   [AdminGudang\StockController::class, 'adjust'])->name('stocks.adjust');
+            Route::post('/stocks/{product}/adjust',  [AdminGudang\StockController::class, 'store'])->name('stocks.store');
+            Route::get('/stocks/movements',          [AdminGudang\StockController::class, 'movements'])->name('stocks.movements');
+            Route::get('/stocks/low-stock',          [AdminGudang\StockController::class, 'lowStock'])->name('stocks.low-stock');
+            
+            // Laporan Stok
+            Route::get('/reports/stock', [AdminGudang\ReportController::class, 'stock'])->name('reports.stock');
+            });
+            
 // ─────────────────────────────────────────
 // OWNER ROOT
 // ─────────────────────────────────────────
 
-
 Route::prefix('owner')
-    ->name('owner.')
-    ->middleware(['auth', 'owner'])
-    ->group(function () {
-
+->name('owner.')
+->middleware(['auth', 'owner'])
+->group(function () {
+        
         // Dashboard
         Route::get('/dashboard', [Owner\DashboardController::class, 'index'])->name('dashboard');
-
+        
         // Laporan (read only)
         Route::get('/reports/sales',  [Owner\ReportController::class, 'sales'])->name('reports.sales');
         Route::get('/reports/sales/export', [Owner\ReportController::class, 'exportSales'])->name('reports.sales.export');
         Route::get('/reports/stock',  [Owner\ReportController::class, 'stock'])->name('reports.stock');
         Route::get('/reports/profit', [Owner\ReportController::class, 'profit'])->name('reports.profit');
-
+                
         // Pesanan (read only)
         Route::get('/orders',       [Owner\OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{order}', [Owner\OrderController::class, 'show'])->name('orders.show');
@@ -51,68 +159,6 @@ Route::prefix('owner')
         Route::patch('/profile/password', [OwnerProfile::class, 'updatePassword'])->name('profile.password');
     });
 
-// ─────────────────────────────────────────
-// ADMIN ROUTES
-// ─────────────────────────────────────────
-Route::prefix('admin')
-    ->name('admin.')
-    ->middleware(['auth', 'admin'])
-    ->group(function () {
-
-        // Dashboard
-        Route::get('/dashboard', [Admin\DashboardController::class, 'index'])
-            ->name('dashboard');
-
-        // Brand
-        Route::resource('brands', Admin\BrandController::class);
-
-        // Users
-        Route::get('/users', [Admin\UserController::class, 'index'])->name('users.index');
-        Route::get('/users/{user}', [Admin\UserController::class, 'show'])->name('users.show');
-        Route::patch('/users/{user}/toggle-active', [Admin\UserController::class, 'toggleActive'])->name('users.toggleActive');
-
-        // Users >> Pelanggan
-        Route::patch('/users/{user}/reset-password', [Admin\UserController::class, 'resetPassword'])->name('users.resetPassword');
-        
-        // Category
-        Route::resource('categories', Admin\CategoryController::class);
-
-        // Product
-        Route::resource('products', Admin\ProductController::class);
-
-        // Stock
-        Route::prefix('stocks')->name('stocks.')->group(function () {
-            Route::get('/',                          [Admin\StockController::class, 'index'])->name('index');
-            Route::get('/{product}/adjust',          [Admin\StockController::class, 'adjust'])->name('adjust');
-            Route::post('/{product}/adjust',         [Admin\StockController::class, 'store'])->name('store');
-            Route::get('/movements',                 [Admin\StockController::class, 'movements'])->name('movements');
-            Route::get('/low-stock',                 [Admin\StockController::class, 'lowStock'])->name('low-stock');
-        });
-
-        // Order
-        Route::resource('orders', Admin\OrderController::class)->only(['index', 'show']);
-        Route::patch('/orders/{order}/status',       [Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
-
-        // Payment Verification
-        Route::prefix('payments')->name('payments.')->group(function () {
-            Route::get('/',                          [Admin\OrderController::class, 'payments'])->name('index');
-            Route::patch('/{payment}/verify',        [Admin\OrderController::class, 'verifyPayment'])->name('verify');
-            Route::patch('/{payment}/reject',        [Admin\OrderController::class, 'rejectPayment'])->name('reject');
-            Route::patch('/{payment}/manual-verify', [Admin\OrderController::class, 'manualVerifyPayment'])->name('manual-verify');
-        });
-
-        // Invoice
-        Route::get('/invoices',                      [Admin\InvoiceController::class, 'index'])->name('invoices.index');
-        Route::get('/invoices/{invoice}',            [Admin\InvoiceController::class, 'show'])->name('invoices.show');
-        Route::get('/invoices/{invoice}/download',   [Admin\InvoiceController::class, 'download'])->name('invoices.download');
-
-        // Report
-        Route::prefix('reports')->name('reports.')->group(function () {
-            Route::get('/sales',                     [Admin\ReportController::class, 'sales'])->name('sales');
-            Route::get('/sales/export',              [Admin\ReportController::class, 'exportSales'])->name('sales.export');
-            Route::get('/stock',                     [Admin\ReportController::class, 'stock'])->name('stock');
-        });
-    });
 
 // ─────────────────────────────────────────
 // CUSTOMER ROUTES

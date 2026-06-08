@@ -52,12 +52,15 @@
 
 <div class="card p-0 overflow-hidden">
     <table class="w-full text-sm">
-        <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Margin</th>
         <thead class="bg-gray-50 border-b border-gray-100">
             <tr>
                 <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Produk</th>
                 <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">SKU</th>
-                <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Harga</th>
+                <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Harga Jual</th>
+                @if(auth()->user()->canSeeProfit())
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Harga Modal</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Margin</th>
+                @endif
                 <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Stok</th>
                 <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
                 <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Aksi</th>
@@ -66,6 +69,8 @@
         <tbody class="divide-y divide-gray-50">
             @forelse($products as $product)
                 <tr class="hover:bg-gray-50">
+
+                    {{-- Produk --}}
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
                             @if($product->image)
@@ -85,15 +90,40 @@
                             </div>
                         </div>
                     </td>
+
+                    {{-- SKU --}}
                     <td class="px-6 py-4">
                         <p class="font-mono text-xs text-gray-700">{{ $product->sku }}</p>
                         @if($product->part_number)
                             <p class="font-mono text-xs text-gray-400">{{ $product->part_number }}</p>
                         @endif
                     </td>
+
+                    {{-- Harga Jual --}}
                     <td class="px-6 py-4 font-semibold text-gray-800">
                         Rp {{ number_format($product->price, 0, ',', '.') }}
                     </td>
+
+                    {{-- Harga Modal & Margin — hanya super_admin & owner --}}
+                    @if(auth()->user()->canSeeProfit())
+                        <td class="px-6 py-4 text-sm text-gray-500">
+                            {{ $product->cost_price > 0 ? 'Rp '.number_format($product->cost_price, 0, ',', '.') : '—' }}
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($product->cost_price > 0)
+                                <p class="{{ $product->margin_percent >= 20 ? 'text-green-600' : ($product->margin_percent >= 10 ? 'text-yellow-600' : 'text-red-500') }} font-semibold text-sm">
+                                    {{ $product->margin_percent }}%
+                                </p>
+                                <p class="text-xs text-gray-400">
+                                    +Rp {{ number_format($product->profit, 0, ',', '.') }}
+                                </p>
+                            @else
+                                <span class="text-xs text-gray-300">—</span>
+                            @endif
+                        </td>
+                    @endif
+
+                    {{-- Stok --}}
                     <td class="px-6 py-4">
                         @if($product->stock)
                             <span class="{{ $product->stock->isLowStock() ? 'text-red-600 font-bold' : 'text-gray-700' }}">
@@ -107,6 +137,8 @@
                             <span class="text-gray-400 text-xs">-</span>
                         @endif
                     </td>
+
+                    {{-- Status --}}
                     <td class="px-6 py-4">
                         @if($product->is_active)
                             <span class="badge-delivered">Aktif</span>
@@ -114,6 +146,8 @@
                             <span class="badge-cancelled">Nonaktif</span>
                         @endif
                     </td>
+
+                    {{-- Aksi --}}
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2">
                             <a href="{{ route('admin.products.show', $product) }}"
@@ -127,23 +161,14 @@
                             </form>
                         </div>
                     </td>
-                    <td class="px-6 py-4">
-                        @if($product->cost_price > 0)
-                            <p class="{{ $product->margin_percent >= 20 ? 'text-green-600' : ($product->margin_percent >= 10 ? 'text-yellow-600' : 'text-red-500') }} font-semibold text-sm">
-                                {{ $product->margin_percent }}%
-                            </p>
-                            <p class="text-xs text-gray-400">
-                                +Rp {{ number_format($product->profit, 0, ',', '.') }}
-                            </p>
-                        @else
-                            <span class="text-xs text-gray-300">—</span>
-                        @endif
-                    </td>
+
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="px-6 py-12 text-center text-gray-400">
-                        Belum ada produk. <a href="{{ route('admin.products.create') }}" class="text-blue-600">Tambah sekarang</a>
+                    <td colspan="{{ auth()->user()->canSeeProfit() ? 8 : 6 }}"
+                        class="px-6 py-12 text-center text-gray-400">
+                        Belum ada produk.
+                        <a href="{{ route('admin.products.create') }}" class="text-blue-600">Tambah sekarang</a>
                     </td>
                 </tr>
             @endforelse
